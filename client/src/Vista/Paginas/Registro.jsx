@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import {useState} from 'react';
 import axios from 'axios';
-
+/*verificar paquetes*/
 
 
 export default function Registro(){
@@ -22,6 +22,7 @@ export default function Registro(){
             });
             alert('¡Registro exitoso, podés iniciar sesión!');
         }catch(e){
+
             alert('Error en registro, intente más tarde.')
         }
         
