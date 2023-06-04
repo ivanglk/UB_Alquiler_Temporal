@@ -6,12 +6,14 @@ const User = require('./Modelo/usuario.js')
 const bcrypt = require('bcryptjs'); /* para encrypt constraseña*/
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const CookieParser = require('cookie-parser');
 
 const bcryptSalt = bcrypt.genSaltSync(10); /*Funcion que encripta password*/
 const jwtSecret = 'jfnvejbelbeñjbge'; /*Random string*/
 
 
-app.use(express.json()) /* para poder leer los objetos json cuando se cargan en registrar*/
+app.use(express.json()); /* para poder leer los objetos json cuando se cargan en registrar*/
+app.use(CookieParser());
 app.use(cors({
     credentials: true,
     origin: 'http://127.0.0.1:5173',
@@ -28,6 +30,7 @@ app.get('/test', (req,res) => {
 
 app.post('/register', async (req,res) => {
     const {name,document,email,password} = req.body; /*tomamos los datos en req.body*/
+    
     try{
         const userDoc = await User.create({
             name,
@@ -50,9 +53,9 @@ app.post('/login', async (req,res) => {
     if (userDoc){ /*Revisa que no sea nulo*/
         const passOK = bcrypt.compareSync(password,userDoc.password); /*Compara contraseñas para ver si son iguales*/
         if (passOK){
-            jwt.sign({email:userDoc.email, id:userDoc._id},jwtSecret, {}, (err,token) => {
+            jwt.sign({email:userDoc.email, id:userDoc._id, name:userDoc.name},jwtSecret, {}, (err,token) => {
                 if (err) throw err; /* en la propia funcion verificamos error. */
-                res.cookie('token',token).json('Contraseña correcta');
+                res.cookie('token',token).json(userDoc);
 
             }); /* en mongoDB se guarda el user id como _id*/
             
@@ -64,5 +67,24 @@ app.post('/login', async (req,res) => {
     }
 
 });
+
+
+app.get('/profile', (req,res) => {
+    const {token} = req.cookies;
+    if(token){
+        jwt.verify(token,jwtSecret,{}, async (err,userData)=> {
+            if(err) throw err;
+            const {name,email,_id} = await User.findById(userData.id);
+            res.json({name,email,_id});
+        });
+    }else{
+        res.json(null);
+    }
+    res.json({token});
+});
+
+
+
+
 app.listen(4000);
 
