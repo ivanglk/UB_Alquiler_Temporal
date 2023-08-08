@@ -12,11 +12,17 @@ export default function LoginPage(){
         ev.preventDefault();
         try{
             const {data} = await axios.post('/login', {email,password});
-            setUser(data);
-            alert('Inició Sesión');
-            setRedirect(true);
+            if (data.email){
+                setUser(data);
+                alert('Inició Sesión');
+                setRedirect(true);
+            }else{
+                alert('Contraseña Incorrecta');
+            }
+            
         }catch(e){
-            alert('Error en inicio de sesión');
+            alert('Error inicio de sesión');
+            
 
         }
     };
@@ -32,7 +38,7 @@ export default function LoginPage(){
                     Inicio Sesión
                 </h1>
                 <form className="max-w-md mx-auto " onSubmit={handleloginsubmit}>
-                    <input type="email" placeholder={'usuario@dominio.com'} value ={email} onChange={ev => setEmail(ev.target.value)}/>
+                    <input type="email" placeholder='usuario@dominio.com' value ={email} onChange={ev => setEmail(ev.target.value)}/>
                     <input type="password" placeholder="Contraseña" value ={password} onChange={ev => setPassword(ev.target.value)}/>
                     <button className="primary">Inicio Sesión</button>
                     <div className="text-center py-2 text-gray-500">

@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const CookieParser = require('cookie-parser');
 
+
 const bcryptSalt = bcrypt.genSaltSync(10); /*Funcion que encripta password*/
 const jwtSecret = 'jfnvejbelbeñjbge'; /*Random string*/
 
@@ -20,7 +21,7 @@ app.use(cors({
 
 }));
 
-mongoose.connect(process.env.Mongo_url); /*Tuvimos que descargar el paquete dotenv, nos conectamos a la base de datos de mongodb*/
+//mongoose.connect(process.env.Mongo_url); /*Tuvimos que descargar el paquete dotenv, nos conectamos a la base de datos de mongodb*/
 
 
 app.get('/test', (req,res) => {
@@ -29,6 +30,7 @@ app.get('/test', (req,res) => {
 });
 
 app.post('/register', async (req,res) => {
+    mongoose.connect(process.env.Mongo_url);
     const {name,document,email,password} = req.body; /*tomamos los datos en req.body*/
     
     try{
@@ -48,28 +50,32 @@ app.post('/register', async (req,res) => {
 })
 
 app.post('/login', async (req,res) => {
+    mongoose.connect(process.env.Mongo_url);
     const {email,password} = req.body;
     const userDoc = await User.findOne({email});
     if (userDoc){ /*Revisa que no sea nulo*/
         const passOK = bcrypt.compareSync(password,userDoc.password); /*Compara contraseñas para ver si son iguales*/
         if (passOK){
-            jwt.sign({email:userDoc.email, id:userDoc._id, name:userDoc.name},jwtSecret, {}, (err,token) => {
+            jwt.sign({email:userDoc.email, id:userDoc._id},jwtSecret, {}, (err,token) => {
                 if (err) throw err; /* en la propia funcion verificamos error. */
                 res.cookie('token',token).json(userDoc);
 
             }); /* en mongoDB se guarda el user id como _id*/
             
         }else{
-            res.status(422).json('Contraseña incorrecta');
+            
+            res.json('Contraseña incorrecta');
         }
     } else{
-        res.json('No encontrado');
+        
+        res.status(422).json('No encontrado');
     }
 
 });
 
 
 app.get('/profile', (req,res) => {
+    mongoose.connect(process.env.Mongo_url);
     const {token} = req.cookies;
     if(token){
         jwt.verify(token,jwtSecret,{}, async (err,userData)=> {
@@ -80,10 +86,11 @@ app.get('/profile', (req,res) => {
     }else{
         res.json(null);
     }
-    res.json({token});
 });
 
-
+app.post('/logout', (req,res) => {
+    res.cookie('token','').json(true);
+});
 
 
 app.listen(4000);
