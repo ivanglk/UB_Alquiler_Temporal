@@ -31,4 +31,4 @@ function App() {
 
 export default App
 
-/* Quede en 1:30:00 */
+/* Quede en 3:20:00 */

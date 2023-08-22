@@ -7,7 +7,9 @@ const bcrypt = require('bcryptjs'); /* para encrypt constraseña*/
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const CookieParser = require('cookie-parser');
-
+const imageDownloader = require("image-downloader");
+const multer = require('multer');
+const fs = require('fs');
 
 const bcryptSalt = bcrypt.genSaltSync(10); /*Funcion que encripta password*/
 const jwtSecret = 'jfnvejbelbeñjbge'; /*Random string*/
@@ -15,6 +17,7 @@ const jwtSecret = 'jfnvejbelbeñjbge'; /*Random string*/
 
 app.use(express.json()); /* para poder leer los objetos json cuando se cargan en registrar*/
 app.use(CookieParser());
+app.use('/uploads', express.static(__dirname+'/uploads'));
 app.use(cors({
     credentials: true,
     origin: 'http://127.0.0.1:5173',
@@ -93,5 +96,28 @@ app.post('/logout', (req,res) => {
 });
 
 
+app.post('/upload-by-link', async (req,res) => {
+    const {link} = req.body;
+    const newName = 'photo' + Date.now() + '.jpg';
+    await imageDownloader.image({
+        url:link,
+        dest:__dirname + '/uploads/' +newName,
+    });
+    res.json(newName);
+});
+
+const photosMiddleware = multer({dest:'uploads/'});
+app.post('/upload', photosMiddleware.array('photos',100), (req,res) => {
+    const uploadedFiles = [];
+    for(let i=0;i<req.files.length;i++){
+        const {path,originalname} = req.files[i];
+        const parts = originalname.split('.');
+        const ext = parts[parts.length - 1];
+        const newPath = path + '.' + ext;
+        fs.renameSync(path, newPath);
+        uploadedFiles.push(newPath.replace('uploads/',''));
+    }
+    res,json(uploadedFiles);
+});
 app.listen(4000);
 
