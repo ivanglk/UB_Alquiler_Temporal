@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const mongoose = require('mongoose');
-const User = require('./Modelo/usuario.js')
+const User = require('./Modelo/usuario.js');
+const Place = require('./Modelo/Place.js');
 const bcrypt = require('bcryptjs'); /* para encrypt constraseña*/
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -10,6 +11,7 @@ const CookieParser = require('cookie-parser');
 const imageDownloader = require("image-downloader");
 const multer = require('multer');
 const fs = require('fs');
+
 
 const bcryptSalt = bcrypt.genSaltSync(10); /*Funcion que encripta password*/
 const jwtSecret = 'jfnvejbelbeñjbge'; /*Random string*/
@@ -117,7 +119,25 @@ app.post('/upload', photosMiddleware.array('photos',100), (req,res) => {
         fs.renameSync(path, newPath);
         uploadedFiles.push(newPath.replace('uploads/',''));
     }
-    res,json(uploadedFiles);
+    res.json(uploadedFiles);
 });
+
+app.post('/places',(req,res) => {
+    const {token} = req.cookies;
+    const {title,address,addedPhotos,description,perks,extrainfo,CheckIn,CheckOut,maxGuest} = req.body;
+    jwt.verify(token,jwtSecret,{}, async (err,userData)=> {
+        if(err) throw err;
+        const placeDoc = await Place.create({
+            owner:userData.id,
+            title,address,addedPhotos,description,perks,extrainfo,CheckIn,CheckOut,maxGuest,
+
+
+        });
+        res.json(placeDoc);
+        
+    });
+
+});
+
 app.listen(4000);
 
