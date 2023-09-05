@@ -25,7 +25,7 @@ function App() {
           <Route path = '/account' element={<ProfilePage />}/> 
           <Route path = '/account/places' element={<PlacesPage />}/> 
           <Route path = '/account/places/new' element={<PlacesFormPage />}/> 
-         
+          <Route path = '/account/places/:id' element={<PlacesFormPage />}/>
         </Route>
       </Routes>
     </UserContextProvider>
@@ -34,4 +34,4 @@ function App() {
 
 export default App
 
-/* Quede en 4:06:00 */
+/* Quede en 4:06:46 */
