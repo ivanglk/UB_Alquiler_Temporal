@@ -8,6 +8,7 @@ import axios from 'axios';
 import { UserContextProvider } from './UserContext.jsx';
 import ProfilePage from './Vista/Paginas/AccountPage.jsx';
 import PlacesPage from './Vista/Paginas/PlacesPage.jsx';
+import PlacePage from './Vista/Paginas/PlacePage.jsx';
 import PlacesFormPage from './Vista/Paginas/PlacesFormPage.jsx';
 
 axios.defaults.baseURL = 'http://127.0.0.1:4000';
@@ -26,6 +27,7 @@ function App() {
           <Route path = '/account/places' element={<PlacesPage />}/> 
           <Route path = '/account/places/new' element={<PlacesFormPage />}/> 
           <Route path = '/account/places/:id' element={<PlacesFormPage />}/>
+          <Route path = '/place/:id' element={<PlacePage/>}/>
         </Route>
       </Routes>
     </UserContextProvider>
@@ -34,4 +36,4 @@ function App() {
 
 export default App
 
-/* Quede en 4:06:46 */
+/* Quede en 6:00:40 */
