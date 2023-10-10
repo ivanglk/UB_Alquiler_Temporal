@@ -10,6 +10,8 @@ import ProfilePage from './Vista/Paginas/AccountPage.jsx';
 import PlacesPage from './Vista/Paginas/PlacesPage.jsx';
 import PlacePage from './Vista/Paginas/PlacePage.jsx';
 import PlacesFormPage from './Vista/Paginas/PlacesFormPage.jsx';
+import BookingsPage from './Vista/Paginas/BookingsPage.jsx';
+import BookingPage from './Vista/Paginas/BookingPage.jsx';
 
 axios.defaults.baseURL = 'http://127.0.0.1:4000';
 axios.defaults.withCredentials = true;
@@ -28,6 +30,8 @@ function App() {
           <Route path = '/account/places/new' element={<PlacesFormPage />}/> 
           <Route path = '/account/places/:id' element={<PlacesFormPage />}/>
           <Route path = '/place/:id' element={<PlacePage/>}/>
+          <Route path = '/account/bookings' element={<BookingsPage />}/>
+          <Route path = '/account/bookings/:id' element={<BookingPage />}/>
         </Route>
       </Routes>
     </UserContextProvider>
